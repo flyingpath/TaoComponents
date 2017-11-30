@@ -17,7 +17,6 @@ class RoundButtonGroup extends React.Component {
     }
 
     bodyClick(){
-        console.log('clo')
         this.setState({
             openSub: !this.state.openSub
         })
@@ -26,7 +25,8 @@ class RoundButtonGroup extends React.Component {
     render() {
         const subNum = 3
         const width = 30
-        const content = ['V1', 'V2', 'V3']
+        const bodyContent = this.props.body
+        const content = this.props.subArray 
         const Body = styled.div`
             display: flex;
             width: ${width}px;
@@ -48,7 +48,7 @@ class RoundButtonGroup extends React.Component {
                     })()
                 }
                 <div>
-                    V1
+                    {bodyContent}
                 </div>
             </Body>
         )
@@ -88,7 +88,7 @@ class RoundButtonGroup extends React.Component {
                 animation-fill-mode: forwards;
             `
             rtnArray.push(
-                <Element key={i} onClick={()=>{console.log(i)}}>
+                <Element key={i} onClick={()=>{this.props.onClick(i)}}>
                     <div>
                         {content[i-1]}
                     </div>
@@ -97,10 +97,13 @@ class RoundButtonGroup extends React.Component {
         }
 
         return rtnArray
-
-        // transform: rotate(${60*(i-1)}deg) translateY(-${width+5}px);
-        // transform-origin: 50% 50%;
     }
+}
+
+RoundButtonGroup.defaultProps={
+    onClick: (i)=>{},
+    body: 'V1',
+    subArray: ['V1', 'V2', 'V3']
 }
 
 export default RoundButtonGroup
