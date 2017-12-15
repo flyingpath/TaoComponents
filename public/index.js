@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom'
 import { AppContainer } from 'react-hot-loader'
 import RenderForcer from './app'
 
+import './css/general.css'
+
 const render = (Component) => {
   ReactDOM.render(
     <AppContainer>
