@@ -36,6 +36,11 @@ class RoundButtonGroup extends React.Component {
             align-items: center;
             justify-content: center;
             position: relative;
+            color:#00208c;
+            border: none;
+            font-family: monospace;
+            background: radial-gradient(circle at 10px 5px,#b8dbff,#8fc6fd,#407dab);
+            cursor:pointer;
         `
 
         return (
@@ -71,7 +76,7 @@ class RoundButtonGroup extends React.Component {
             const x = longSide * Math.cos(-Math.PI/2 + Math.PI*(i-1)/3)
             const y = longSide * Math.sin(-Math.PI/2 + Math.PI*(i-1)/3)
 
-            const Element=styled.div`
+            const Element = styled.div`
                 display: flex;
                 width: ${width}px;
                 height: ${width}px;
@@ -86,6 +91,12 @@ class RoundButtonGroup extends React.Component {
                 animation-delay: ${0.1*(i-1)}s;
                 opacity: 0;
                 animation-fill-mode: forwards;
+                color: white;
+                border: none;
+                font-family: monospace;
+                background: radial-gradient(circle at 2px 0px,#87d2ff,#1348c6);
+                cursor: pointer;
+                font-weight: bold;
             `
             rtnArray.push(
                 <Element key={i} onClick={()=>{this.props.onClick(i)}}>
