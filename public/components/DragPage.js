@@ -14,14 +14,24 @@ class DragPage extends React.Component {
         super(props)
         this.state = {
             transX: 0,
-            open:true
+            open:this.props.open
         }
-        this.handleClick = this.handleClick.bind(this)
         this.x
     }
 
-    handleClick() {
-        
+    componentWillReceiveProps(nextProps){
+        if (nextProps){
+            this.setState({
+                open: nextProps.open
+            })
+        }
+    }
+
+    closeSlide(){
+        this.setState({ open: false })
+        if (this.props.closeFunc) {
+            this.props.closeFunc()
+        }
     }
 
     componentDidMount(){
@@ -31,7 +41,7 @@ class DragPage extends React.Component {
         const touchEndEvent = Observable.fromEvent(leftColumn, 'touchend')
                                 .map( e=> {
                                     if ( this.x>50 ){
-                                        this.setState({ open: false })
+                                        this.closeSlide()
                                     }else{
                                         this.setState({
                                             transX: 0
@@ -70,8 +80,8 @@ class DragPage extends React.Component {
                         {            
                             height:'100%',
                             width:'100%',
-                            backgroundColor:'#8787ff',
-                            transform:`translateX(${this.state.transX}px)`
+                            transform:`translateX(${this.state.transX}px)`,
+                            position: 'relative',
                         }
                     }
                 >
@@ -81,7 +91,11 @@ class DragPage extends React.Component {
                             {            
                                 height:'100%',
                                 width:'50px',
-                                border:'1px solid'
+                                border:'1px solid',
+                                position:'absolute',
+                                left:'0px',
+                                zIndex:'2'
+
                             }
                         }/>
                     {this.props.children}
