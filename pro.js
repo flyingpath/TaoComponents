@@ -12,8 +12,8 @@ fs.removeSync('dist/src')
 fs.mkdir('dist/src', ()=>{})
 fs.mkdir('dist/src/source', ()=>{})
 
-const BUILD_DIR = path.resolve(__dirname, 'dist/src');
-const APP_DIR = path.resolve(__dirname, 'src');
+const BUILD_DIR = path.resolve(__dirname, 'src');
+const APP_DIR = path.resolve(__dirname, 'public');
 
 module.exports = {
     entry: APP_DIR + '/index.js',
