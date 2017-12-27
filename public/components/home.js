@@ -3,6 +3,7 @@ import { observer } from 'mobx-react'
 import mobx from 'mobx'
 import _ from 'lodash'
 
+import T_RoundButton from 'tao-components'
 import dataStore from '../stores/data'
 
 class Home extends React.Component {
@@ -25,10 +26,7 @@ class Home extends React.Component {
     render() {
         return (
             <div>
-             Hello
-             <div id='body'>
-                 you have my sword
-             </div>
+                <T_RoundButton />
             </div>
         )
     }
