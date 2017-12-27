@@ -60,18 +60,6 @@ module.exports = {
         ]
     },
     plugins: [
-		new webpack.optimize.UglifyJsPlugin({       // 把 打包檔 minify 的plugin
-            beautify: false,
-            mangle: {
-                    screw_ie8: true,
-                    keep_fnames: true
-            },
-            compress: {
-                    screw_ie8: true,
-                    warnings: false
-            },
-            comments: false
-		}),
 		new webpack.DefinePlugin({
 			'process.env.NODE_ENV': JSON.stringify('production')
 		}),

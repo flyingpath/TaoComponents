@@ -4,7 +4,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "webpack-dev-server --env.port=9487",
-    "build": "webpack --env.type=pro --progress --profile --colors"
+    "build": "webpack --env.type=pro --progress --profile --colors",
+    "compile": "babel public --out-dir src"
   },
   "dependencies": {
     "material-ui": "^0.20.0",
