@@ -3,24 +3,24 @@ const webpack = require('webpack');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const fs = require('fs-extra')
+const path = require('path')
 
 
 console.log('打包pro');
 
-fs.removeSync('dist/public')
-fs.mkdir('dist/public', () => { })
-fs.mkdir('dist/public/source', () => { })
+fs.removeSync('dist/src') 
+fs.mkdir('dist/src', ()=>{})
+fs.mkdir('dist/src/source', ()=>{})
+
+const BUILD_DIR = path.resolve(__dirname, 'dist/src');
+const APP_DIR = path.resolve(__dirname, 'src');
 
 module.exports = {
-    entry: [
-        'babel-polyfill',
-        './index.js'
-    ],
+    entry: APP_DIR + '/index.js',
     output: {
-        filename: 'bundle.js',
-        path: resolve(__dirname, 'dist/public'),
+        path: BUILD_DIR,
+        filename: 'index.js'
     },
-    context: resolve(__dirname, 'public'),
     module: {
         rules: [
             {

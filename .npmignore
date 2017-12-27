@@ -1,0 +1,16 @@
+# npmignore
+src
+node_modules
+dev
+
+.babelrc
+.gitignore
+.eslintrc
+
+dev.js
+pro.js
+webpack.config.js
+
+tsconfig.json
+package.json
+package-lock.json

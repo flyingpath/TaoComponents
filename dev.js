@@ -23,14 +23,14 @@ devPack = env => {
         ],
         output: {
             filename: 'bundle.js',
-            path: resolve(__dirname, 'dev/public'),
+            path: resolve(__dirname, 'dev/src'),
         },
-        context: resolve(__dirname, 'public'),
+        context: resolve(__dirname, 'src'),
         devServer: {
             port: port,
             host: '0.0.0.0',
             contentBase: resolve(__dirname, 'dev'),
-            publicPath: '/public',
+            publicPath: '/src',
             hot: true,
             disableHostCheck: true
         },
