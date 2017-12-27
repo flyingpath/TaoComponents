@@ -1,7 +1,7 @@
 {
-  "name": "webpack_web",
+  "name": "tao-components",
   "version": "1.0.0",
-  "main": "public/index.js",
+  "main": "src/index.js",
   "scripts": {
     "start": "webpack-dev-server --env.port=9487",
     "build": "webpack --env.type=pro --progress --profile --colors"
@@ -12,6 +12,7 @@
     "mobx-react": "^4.3.5",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
+    "styled-components": "^2.4.0",
     "whatwg-fetch": "^2.0.3"
   },
   "devDependencies": {

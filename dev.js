@@ -5,9 +5,9 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin")
 
 devPack = env => {
     console.log('打包dev')
-    fs.removeSync('dev/public')
-    fs.mkdir('dev/public', () => { })
-    fs.mkdir('dev/public/source', () => { })
+    fs.removeSync('dev/src')
+    fs.mkdir('dev/src', () => { })
+    fs.mkdir('dev/src/source', () => { })
     
     const port = env.port
 
@@ -20,14 +20,14 @@ devPack = env => {
         ],
         output: {
             filename: 'bundle.js',
-            path: resolve(__dirname, 'dev/public'),
+            path: resolve(__dirname, 'dev/src'),
         },
-        context: resolve(__dirname, 'public'),
+        context: resolve(__dirname, 'src'),
         devServer: {
             port: port,
             host: '0.0.0.0',
             contentBase: resolve(__dirname, 'dev'),
-            publicPath: '/public',
+            publicPath: '/src',
             hot: true,
             disableHostCheck: true
         },
