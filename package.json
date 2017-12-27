@@ -1,7 +1,7 @@
 {
   "name": "tao-components",
-  "version": "1.0.0",
-  "main": "public/index.js",
+  "version": "1.0.1",
+  "main": "src/index.js",
   "scripts": {
       "start": "webpack-dev-server --mode development --hot --env.type=dev --env.port=9487",
       "build": "webpack --mode production --env.type=pro --progress --profile --colors"

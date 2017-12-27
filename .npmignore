@@ -1,5 +1,5 @@
 # npmignore
-src
+public
 node_modules
 dev
 
