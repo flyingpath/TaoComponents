@@ -1,6 +1,4 @@
 import React from 'react' 
-import {observer} from 'mobx-react' 
-import mobx from 'mobx' 
 import _ from 'lodash' 
 import { Observable } from 'rxjs' 
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
@@ -16,6 +14,7 @@ class DragPage extends React.Component {
             transX: 0,
             open:this.props.open
         }
+        this.leftRender = this.leftRender.bind(this)
         this.x
     }
 
@@ -34,8 +33,8 @@ class DragPage extends React.Component {
         }
     }
 
-    componentDidMount(){
-        const leftColumn = document.querySelector('#leftDragColumnTao')
+    leftRender (div){
+        const leftColumn = div
         const touchStartEvent = Observable.fromEvent(leftColumn, 'touchstart')
         const touchMoveEvent = Observable.fromEvent(leftColumn, 'touchmove')
         const touchEndEvent = Observable.fromEvent(leftColumn, 'touchend')
@@ -52,6 +51,8 @@ class DragPage extends React.Component {
         const observerSlide = touchStartEvent
             .switchMap(
                 (e) => {
+                    console.log('1')
+                    console.log(this)
                     this.x = e.touches[0].clientX
                     return touchMoveEvent.takeUntil(touchEndEvent)
                 })
@@ -97,7 +98,9 @@ class DragPage extends React.Component {
                                 zIndex:'2'
 
                             }
-                        }/>
+                        }
+                        ref = { this.leftRender }
+                    />
                     {this.props.children}
                 </div>
             )
@@ -117,7 +120,7 @@ class DragPage extends React.Component {
 }
 
 DragPage.defaultProps={
-
+    open: true
 }
 
-export default observer(DragPage)
+export default DragPage
