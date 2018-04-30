@@ -1,7 +1,7 @@
 import React from 'react' 
 import _ from 'lodash' 
 import { Observable } from 'rxjs' 
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
+import { CSSTransition } from 'react-transition-group'
 
 import styled, {keyframes, injectGlobal} from 'styled-components'
 
@@ -107,13 +107,15 @@ class DragPage extends React.Component {
         }
 
         return (
-            <ReactCSSTransitionGroup
-                transitionName='card_recordSlide'
-                transitionEnterTimeout={10000}
-                transitionLeaveTimeout={10000}
+            <CSSTransition
+                classNames='card_recordSlide'
+                timeout={{ 
+                    exit: 10000, 
+                    enter: 10000
+                }}
             >
                 {renderPage}
-            </ReactCSSTransitionGroup>
+            </CSSTransition>
             
         )
     }

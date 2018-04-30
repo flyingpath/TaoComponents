@@ -25,7 +25,7 @@ class T_Dialog extends React.Component {
             width: 100%;
             background: rgba(0, 0, 0, 0.2);
             background-size: 4px 4px;
-            z-index: 5
+            z-index: 5;
         `
 
         this.bodyComp=styled.div`
@@ -39,7 +39,7 @@ class T_Dialog extends React.Component {
             overflow-y: auto;
             margin: 0 auto;
             box-shadow: 0px 2px 10px 5px #80808036;
-            animation: ${this.fadeIn} .2s linear
+            animation: ${this.fadeIn} .2s linear;
         `
     }
 
