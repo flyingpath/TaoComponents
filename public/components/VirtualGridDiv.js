@@ -11,8 +11,8 @@ class VirtualTable extends React.Component {
         super(props)
         
         this.rawDataItem = props.dataItem
-        this.columnData = this.rawDataItem? this.rawDataItem.tableColumns:[]
-        this.rawData = this.rawDataItem? this.rawDataItem.data: []
+        this.columnData = _.isEmpty( this.rawDataItem )? [] : this.rawDataItem.tableColumns
+        this.rawData = _.isEmpty( this.rawDataItem )? [] : this.rawDataItem.data
         this.rawDecodeData = this.decodeData(this.columnData, this.rawData)
         
         this.state = {
@@ -113,28 +113,28 @@ class VirtualTable extends React.Component {
     }
 
     rowRenderer = (props) => {
-        const columnData = this.columnData
+        const columnData = this.state.columnData
         const data = this.state.data[ props.index ]
+
+        const propsColumnData = props.columns
 
         return (
             <div 
-                style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                }}
-                className = {this.props.rowClassName}
+                style={ props.style }
+                className = {props.className + ' ' + this.props.rowClassName}
+                key={props.key}
+                aria-label = 'row'
+                role="row"
+                tabIndex = {0}
             >
                 {
                     columnData.map( ( eachColumn, idx )=>{
+
+                        let columnProps = _.cloneDeep(propsColumnData[idx].props)
+                        columnProps.className = columnProps.className + ' ' + this.props.rowColumnClassName
+
                         return(
-                            <div
-                                className = {this.props.rowColumnClassName}
-                                style={{
-                                    width: eachColumn.width || 'auto'
-                                }}
-                                key = {idx}
-                            >
+                            <div {...columnProps} key={idx}>
                                 { data[ eachColumn.dataKey ] }
                             </div>
                         )
@@ -156,7 +156,7 @@ class VirtualTable extends React.Component {
         }
         
         const data = this.state.data
-        const columnData = this.rawDataItem.tableColumns
+        const columnData = this.columnData
 
         const rowCount = data.length
         
