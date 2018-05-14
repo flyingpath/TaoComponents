@@ -4,13 +4,11 @@ const fs = require('fs-extra');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 
 devPack = env => {
-
-    console.log('打包dev');
-
-    fs.removeSync('dev/public')
-    fs.mkdir('dev/public', () => { })
-    fs.mkdir('dev/public/source', () => { })
-
+    console.log('打包dev')
+    fs.removeSync('dev/src')
+    fs.mkdir('dev/src', () => { })
+    fs.mkdir('dev/src/source', () => { })
+    
     const port = env.port
 
     return {
