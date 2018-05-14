@@ -34,22 +34,29 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var T_RoundButtons = function (_React$Component) {
-    _inherits(T_RoundButtons, _React$Component);
+var RoundButtonGroup = function (_React$Component) {
+    _inherits(RoundButtonGroup, _React$Component);
 
-    function T_RoundButtons(props) {
-        _classCallCheck(this, T_RoundButtons);
+    function RoundButtonGroup(props) {
+        _classCallCheck(this, RoundButtonGroup);
 
-        var _this = _possibleConstructorReturn(this, (T_RoundButtons.__proto__ || Object.getPrototypeOf(T_RoundButtons)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (RoundButtonGroup.__proto__ || Object.getPrototypeOf(RoundButtonGroup)).call(this, props));
 
         _this.state = {
             openSub: false
         };
+        _this.clickSend = _this.clickSend.bind(_this);
         _this.bodyClick = _this.bodyClick.bind(_this);
         return _this;
     }
 
-    _createClass(T_RoundButtons, [{
+    _createClass(RoundButtonGroup, [{
+        key: 'clickSend',
+        value: function clickSend() {}
+    }, {
+        key: 'componentDidMount',
+        value: function componentDidMount() {}
+    }, {
         key: 'bodyClick',
         value: function bodyClick() {
             this.setState({
@@ -123,16 +130,16 @@ var T_RoundButtons = function (_React$Component) {
         }
     }]);
 
-    return T_RoundButtons;
+    return RoundButtonGroup;
 }(_react2.default.Component);
 
-T_RoundButtons.defaultProps = {
+RoundButtonGroup.defaultProps = {
     onClick: function onClick(i) {},
     body: 'V1',
     subArray: ['V1', 'V2', 'V3']
 };
 
-var _default = T_RoundButtons;
+var _default = RoundButtonGroup;
 exports.default = _default;
 ;
 
@@ -145,8 +152,8 @@ exports.default = _default;
         return;
     }
 
-    reactHotLoader.register(T_RoundButtons, 'T_RoundButtons', 'public/components/T_RoundButtons.js');
-    reactHotLoader.register(_default, 'default', 'public/components/T_RoundButtons.js');
+    reactHotLoader.register(RoundButtonGroup, 'RoundButtonGroup', 'public/components/RoundButtonGroup.js');
+    reactHotLoader.register(_default, 'default', 'public/components/RoundButtonGroup.js');
     leaveModule(module);
 })();
 

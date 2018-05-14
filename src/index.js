@@ -17,12 +17,3 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 exports.T_Dialog = _T_Dialog2.default;
 exports.T_RoundButtons = _T_RoundButtons2.default;
-;
-
-var _temp = function () {
-  if (typeof __REACT_HOT_LOADER__ === 'undefined') {
-    return;
-  }
-}();
-
-;
