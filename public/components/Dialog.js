@@ -43,14 +43,14 @@ class T_Dialog extends React.Component {
         `
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState({
+    static getDerivedStateFromProps(nextProps, prevState){
+        return {
             open: nextProps.open
-        })
+        }
     }
 
     closeDialog(e) {
-        if ( e.target.id == 'tao-dialog-writeNote' ) {
+        if ( e.target.id == this.props.dialogID ) {
             this.setState({
                 open: false
             })
@@ -72,12 +72,12 @@ class T_Dialog extends React.Component {
         } else {
             return (
                 <BackComp 
-                    id='tao-dialog-writeNote' 
-                    style={this.props.backCompStyle} 
-                    onClick={this.closeDialog.bind(this)}
+                    id      = {this.props.dialogID} 
+                    style   = {this.props.backCompStyle} 
+                    onClick = {this.closeDialog.bind(this)}
                 >
                     <BodyComp 
-                        id='tao-dialog-writeNoteBody' 
+                        id = {this.props.dialogBodyID}
                         style={this.props.bodyCompStyle}
                     >
                         {body}
@@ -92,7 +92,10 @@ T_Dialog.defaultProps = {
     open: true,
     onDialogClose: ()=>{},
     bodyCompStyle: {},
-    backCompStyle: {}
+    backCompStyle: {},
+    dialogID: "tao-dialog-writeNote",
+    dialogBodyID: "tao-dialog-writeNoteBody",
+
 }
 
 export default T_Dialog
