@@ -62,32 +62,36 @@ class VirtualTable extends React.Component {
 
     static getDerivedStateFromProps(nextProps, prevState){
 
-        const rawDataItem = nextProps.dataItem || {}
-        let columnData  = _.isEmpty( rawDataItem )? [] : rawDataItem.tableColumns
-        const rawData     = _.isEmpty( rawDataItem )? [] : rawDataItem.data
+        if ( prevState.rawDataItem != nextProps.dataItem ){
+            const rawDataItem = nextProps.dataItem || {}
+            let columnData  = _.isEmpty( rawDataItem )? [] : rawDataItem.tableColumns
+            const rawData     = _.isEmpty( rawDataItem )? [] : rawDataItem.data
 
-        if (window.innerWidth < 700){
-        
-        //---- 響應示不出現的 column ----//
-            const notMatterList = [
-                '員編', '部門', '職稱', '上班卡'
-            ]
-            columnData = columnData.filter( (x)=>{
-                return !(notMatterList.indexOf(x.label) > -1)
-            } )
-        }
-        //----------------------------//
+            if (window.innerWidth < 700){
+            
+            //---- 響應示不出現的 column ----//
+                const notMatterList = [
+                    '員編', '部門', '職稱', '上班卡'
+                ]
+                columnData = columnData.filter( (x)=>{
+                    return !(notMatterList.indexOf(x.label) > -1)
+                } )
+            }
+            //----------------------------//
 
-        const rawDecodeData = T_Table.decodeData(columnData, rawData)
-        
-        return {
-            rawDataItem  : rawDataItem,
-            columnData   : columnData,
-            rawData      : rawData,
-            rawDecodeData: rawDecodeData,
-            data         : rawDecodeData,
-            sortBy       : '',
-            sortDirection: 'ASC'
+            const rawDecodeData = VirtualTable.decodeData(columnData, rawData)
+            
+            return {
+                rawDataItem  : rawDataItem,
+                columnData   : columnData,
+                rawData      : rawData,
+                rawDecodeData: rawDecodeData,
+                data         : rawDecodeData,
+                sortBy       : '',
+                sortDirection: 'ASC'
+            }
+        }else{
+            return null
         }
     }
 
@@ -303,7 +307,7 @@ class VirtualTable extends React.Component {
     }
 }
 
-T_Table.defaultProps={
+VirtualTable.defaultProps={
 
     height: 800,
     headerHeight: 80,
@@ -322,4 +326,4 @@ T_Table.defaultProps={
     }
 }
 
-export default T_Table
+export default VirtualTable
