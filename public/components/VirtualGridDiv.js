@@ -230,7 +230,7 @@ class VirtualTable extends React.Component {
 
                         return(
                             <div {...columnProps} key={idx}>
-                                { data[ eachColumn.dataKey ] }
+                                { data[ eachColumn.dataKey ] || '' }
                             </div>
                         )
                     } )
