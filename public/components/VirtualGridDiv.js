@@ -327,7 +327,7 @@ class VirtualTable extends React.Component {
 
 VirtualTable.defaultProps={
 
-    height: 800,
+    height: 500,
     headerHeight: 80,
     overscanRowCount: 4,
     
