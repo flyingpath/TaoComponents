@@ -39,22 +39,21 @@ class RenderForcer extends React.Component {
             )
     }
         
-    render() {
-        return (
-            <div style={{height:'100%', width: '100%', overflow:'hidden' }}>
-                <CheckBoxes uni withOther onChange={ (data)=>{console.log(data)} } />
-                <UploadFile />
-            </div>
-        )
-    }
     // render() {
     //     return (
     //         <div style={{height:'100%', width: '100%', overflow:'hidden' }}>
-    //             <CheckBoxes dataItem={this.state.dataItem} />
-    //             <button onClick={this.handleClick} >test</button>
+    //             <CheckBoxes uni withOther onChange={ (data)=>{console.log(data)} } />
+    //             <UploadFile />
     //         </div>
     //     )
     // }
+    render() {
+        return (
+            <div style={{height:'100%', width: '100%', overflow:'hidden' }}>
+                <VirtualGridDiv dataItem={testData} />
+            </div>
+        )
+    }
 }
 
 export default RenderForcer

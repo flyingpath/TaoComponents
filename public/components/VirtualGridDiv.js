@@ -222,17 +222,34 @@ class VirtualTable extends React.Component {
                         
                         columnProps.className = columnProps.className + ' ' + this.props.rowColumnClassName
 
-                        if (eachColumn.dataKey ==='isRest' && data.isRest){
-                            const start = moment(data.rest.start, 'YYYYMMDDHHmm')
-                            const end   = moment(data.rest.end, 'YYYYMMDDHHmm')
-                            columnProps.title = start.format('MM/DD HH:mm') + '\n' + end.format('MM/DD HH:mm')
+                        if (eachColumn.width){
+                            columnProps.style.minWidth = eachColumn.width
+                        }
+                        
+                        // ----- 客製化元件 ------
+                        let customizeData = false
+
+                        if ( eachColumn.isLink ){
+                            
+                            // ----- 客製化元件範例 ------
+                            customizeData = (
+                                <React.Fragment>
+                                <div {...columnProps} key={idx}>
+                                    <a href={data[ eachColumn.dataKey ]}> 
+                                        Go to
+                                    </a>
+                                </div>
+                                </React.Fragment>
+                            )
+                            //-------------------------------
                         }
 
                         return(
                             <div {...columnProps} key={idx}>
-                                { data[ eachColumn.dataKey ] || '' }
+                                { customizeData? customizeData : data[ eachColumn.dataKey ] }
                             </div>
                         )
+
                     } )
                 }
             </div>
@@ -293,6 +310,7 @@ class VirtualTable extends React.Component {
                                     dataKey = {eachColumn.dataKey}
                                     disableSort={false}
                                     width={eachColumn.width}
+                                    minWidth={eachColumn.width}
                                     key={idx}
                                     headerClassName = "T_VirtualGridDiv_HeaderColumn"
                                 />

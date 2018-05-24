@@ -7,7 +7,8 @@ const data = {
             "trueDecode": null,
             "falseDecode": null,
             "width": 70,
-            "decodes": {}
+            "decodes": {},
+            "isLink": false
         },
         {
             "label": "姓名",
@@ -15,7 +16,8 @@ const data = {
             "trueDecode": null,
             "falseDecode": null,
             "width": 70,
-            "decodes": {}
+            "decodes": {},
+            "isLink": false
         },
         {
             "label": "部門",
@@ -23,7 +25,8 @@ const data = {
             "trueDecode": null,
             "falseDecode": null,
             "width": 100,
-            "decodes": {}
+            "decodes": {},
+            "isLink": false
         },
         {
             "label": "職稱",
@@ -31,7 +34,8 @@ const data = {
             "trueDecode": null,
             "falseDecode": null,
             "width": 80,
-            "decodes": {}
+            "decodes": {},
+            "isLink": false
         },
         {
             "label": "工作",
@@ -39,7 +43,8 @@ const data = {
             "trueDecode": "是",
             "falseDecode": "否",
             "width": 80,
-            "decodes": {}
+            "decodes": {},
+            "isLink": false
         },
         {
             "label": "請假",
@@ -47,7 +52,8 @@ const data = {
             "trueDecode": null,
             "falseDecode": null,
             "width": 80,
-            "decodes": {}
+            "decodes": {},
+            "isLink": false
         },
         {
             "label": "上班卡",
@@ -55,7 +61,8 @@ const data = {
             "trueDecode": null,
             "falseDecode": null,
             "width": 80,
-            "decodes": {}
+            "decodes": {},
+            "isLink": false
         },
         {
             "label": "留停",
@@ -63,7 +70,8 @@ const data = {
             "trueDecode": null,
             "falseDecode": null,
             "width": 80,
-            "decodes": {}
+            "decodes": {},
+            "isLink": false
         },
         {
             "label": "分機",
@@ -71,7 +79,8 @@ const data = {
             "trueDecode": null,
             "falseDecode": null,
             "width": 80,
-            "decodes": {}
+            "decodes": {},
+            "isLink": true
         }
     ],
     "data": [
@@ -100,7 +109,7 @@ const data = {
                 "start": "-",
                 "end": "-"
             },
-            "name": "游騰驥",
+            "name": "游",
             "isRest": false,
             "lastCard": "05/16\n08:14",
             "isOnline": true,
@@ -131,7 +140,7 @@ const data = {
                 "start": "-",
                 "end": "-"
             },
-            "name": "李曉茜",
+            "name": "李",
             "isRest": false,
             "lastCard": "05/16\n07:50",
             "isOnline": true,
@@ -162,7 +171,7 @@ const data = {
                 "start": "-",
                 "end": "-"
             },
-            "name": "盧伯融",
+            "name": "盧",
             "isRest": false,
             "lastCard": "05/16\n08:19",
             "isOnline": true,
@@ -193,7 +202,7 @@ const data = {
                 "start": "-",
                 "end": "-"
             },
-            "name": "張育農",
+            "name": "張",
             "isRest": false,
             "lastCard": "05/16\n08:43",
             "isOnline": true,

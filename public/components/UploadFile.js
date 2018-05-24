@@ -17,7 +17,7 @@ class UploadFile extends React.Component {
         console.log(e.target.files)
 
         let formData = new FormData()
-        formData.append('file',e.target.files[0])
+        formData.append('fileA',e.target.files[0])
         formData.append('api','aaaa')
 
         let headers = new Headers();
