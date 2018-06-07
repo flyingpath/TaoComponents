@@ -7,6 +7,8 @@ import Dialog from './components/Dialog'
 import VirtualGridDiv from './components/VirtualGridDiv'
 import CheckBoxes from './components/CheckBoxes'
 import UploadFile from './components/UploadFile'
+import FreeTextWithSnippet from './components/FreeTextWithSnippet'
+import RabbitMQ from './components/RabbitMQ'
 
 import testData from './stores/testData'
 
@@ -38,7 +40,15 @@ class RenderForcer extends React.Component {
                 }
             )
     }
+    render() {
+        return (
+            <div style={{height:'100%', width: '100%', overflow:'hidden' }}>
+                <FreeTextWithSnippet />
+            </div>
+        )
+    }
         
+    // <RabbitMQ />
     // render() {
     //     return (
     //         <div style={{height:'100%', width: '100%', overflow:'hidden' }}>
@@ -47,13 +57,15 @@ class RenderForcer extends React.Component {
     //         </div>
     //     )
     // }
-    render() {
-        return (
-            <div style={{height:'100%', width: '100%', overflow:'hidden' }}>
-                <VirtualGridDiv dataItem={testData} />
-            </div>
-        )
-    }
+
+    // render() {
+    //     return (
+    //         <div style={{height:'100%', width: '100%', overflow:'hidden' }}>
+    //             <VirtualGridDiv dataItem={testData} />
+    //         </div>
+    //     )
+    // }
+
 }
 
 export default RenderForcer
