@@ -1,5 +1,6 @@
 import React from 'react'
-import {Editor, EditorState, SelectionState, RichUtils, Modifier, ContentState} from 'draft-js'
+import {Editor, EditorState, SelectionState, RichUtils, Modifier, ContentState } from 'draft-js'
+import { OrderedSet } from 'immutable'
 import _ from 'lodash'
 import * as mobx from 'mobx' 
 import similarS from 'similarity'
@@ -11,6 +12,19 @@ class SnippetDiv extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+        }
+        this.refList = []
+    }
+
+    componentDidUpdate(){
+        if( this.props.focus != null ){
+            if(this.refList){
+                if (this.refList[this.props.focus]){
+                    if( this.refList[this.props.focus].current ){
+                        this.refList[this.props.focus].current.scrollIntoView({ block:'center' })
+                    }
+                }
+            }
         }
     }
 
@@ -52,18 +66,34 @@ class SnippetDiv extends React.Component {
 
         const snippetList = this.props.snippet
         const searchStr   = this.props.searchStr
+        const nowFocus = this.props.focus
 
         const snippet = this.processing( snippetList, searchStr )
+        
+        if (nowFocus!=null){
+            this.props.onChange( snippet[nowFocus] )
+        }
 
         if ( snippet.length === 0 ){
             return null
         }
 
+        this.refList = snippet.map( ()=>React.createRef() )
+
         return (
             <div className = 'snippetDiv'>
                 {
                     _.map( snippet, (eachdata, idx)=>{
-                        return <div key={ idx } className="snippetItemDiv" >{ eachdata.shortCut }</div>
+                        return (
+                            <div 
+                                key={ idx } 
+                                className={`snippetItemDiv${nowFocus===idx?' focus':''}`} 
+                                id={`snippet${idx}`} 
+                                ref={ this.refList[idx]}
+                            >
+                                { eachdata.shortCut }
+                            </div>
+                        )
                     } )
                 }
             </div>
@@ -87,15 +117,18 @@ class FreeTextWithSnippet extends React.Component {
                 bottom: null
             },
             openSnippetHint: true,
-            searchStr: ''
+            searchStr: '',
+            nowFocusSnippet : null
         }
 
         this.editor = null
         this.draftBody = null
 
-        this.personalSnippet = []
-        this.openSnippetHint = true
-        this.searchStr = ''
+        this.personalSnippet    = []
+        this.openSnippetHint    = true
+        this.searchStr          = ''
+        this.searchStrIndex = [ 0, 0 ]
+        this.nowSnippetConstent = ''
         this.hash = []
         
         this.tabListener = null
@@ -116,14 +149,14 @@ class FreeTextWithSnippet extends React.Component {
     
     componentDidMount() {
         const draftBody    = this.draftBody
-        this.tabListener   = draftBody.addEventListener('keydown', this.keyDownFn)
-        this.shiftListener = draftBody.addEventListener('keyup', this.keyUpFn)
-        this.pasteListener = draftBody.addEventListener('paste', this.handlePaste)
+        this.tabListener   = draftBody.addEventListener('keydown', this.keyDownFn, true )
+        this.shiftListener = draftBody.addEventListener('keyup'  , this.keyUpFn )
+        this.pasteListener = draftBody.addEventListener('paste'  , this.handlePaste )
 
 
-        fetch(`https://emr.kfsyscc.org/python/note-get_snipp/001965`, {credentials: 'include'})
-        .then(response => response.json())
-        .then(backdata => {
+        fetch( `https://emr.kfsyscc.org/python/note-get_snipp/001965`, { credentials: 'include' } )
+        .then( response => response.json() )
+        .then( backdata => {
             let tempArray = []
 
             const rawData = _.map(backdata, (eachdata, idx) => {
@@ -142,8 +175,6 @@ class FreeTextWithSnippet extends React.Component {
             this.setState( { 
                 snippetList: this.personalSnippet 
             } )
-            
-            console.log(rawData)
         })
     }
     
@@ -171,7 +202,11 @@ class FreeTextWithSnippet extends React.Component {
         }
     }
 
-    handlePaste = (text) => {
+    // 貼上
+    handlePaste = ( text, isSnippetPaste = false ) => {
+
+        console.log(text)
+
         if (!text){
             return 'handled'
         }
@@ -186,58 +221,111 @@ class FreeTextWithSnippet extends React.Component {
         const styleName = OrderedSet.of('gray')
         let nextContentState, nextEditorState
         
-        if (!selection.isCollapsed()){
-            nextContentState = Modifier.replaceText(nowContentState, selection, text, styleName)
+        // 如果是片語貼上，要取代片語前的字
+        if ( isSnippetPaste == true ){
+            let newSelection = SelectionState.createEmpty()
+
+            const updatedSelection = newSelection.merge({
+                focusKey: selection.getAnchorKey(),
+                focusOffset: this.searchStrIndex[1],
+                anchorKey: selection.getAnchorKey(),
+                anchorOffset: this.searchStrIndex[0],
+                isBackward: false,
+                hasFocus: true
+            })
+            
+            nextContentState = Modifier.replaceText(nowContentState, updatedSelection, text, styleName)
             nextEditorState = EditorState.push(
                 editorState,
                 nextContentState,
                 'replace-characters'
             )
-        }else{
-            nextContentState = Modifier.insertText(nowContentState, selection, text, styleName)
-            nextEditorState = EditorState.push(
-                editorState,
-                nextContentState,
-                'insert-characters'
-            )
+
+        } else {
+        // 非片語貼上
+            if (!selection.isCollapsed()){
+                nextContentState = Modifier.replaceText(nowContentState, selection, text, styleName)
+                nextEditorState = EditorState.push(
+                    editorState,
+                    nextContentState,
+                    'replace-characters'
+                )
+            }else{
+                nextContentState = Modifier.insertText(nowContentState, selection, text, styleName)
+                nextEditorState = EditorState.push(
+                    editorState,
+                    nextContentState,
+                    'insert-characters'
+                )
+            }
         }
 
         nextEditorState = RichUtils.toggleInlineStyle(nextEditorState, 'gray')
         nextEditorState = EditorState.setInlineStyleOverride(nextEditorState, OrderedSet.of('noStyled'))
+        
+        this.setHashList(nextEditorState)
+
         this.setState({ 
-            editorState: nextEditorState
+            editorState: nextEditorState,
+            openSnippetHint: false,
+            searchStr: '',
+            nowFocusSnippet: null
         })
-        this.props.onChange(editorState.getCurrentContent().getPlainText()+text)
+        this.props.onChange(editorState.getCurrentContent().getPlainText() + text)
+        
         return 'handled'
     }
-
+    
     keyDownFn = (e) => {
+
         if (e.which == 9) {
             e.preventDefault()
         }
+
+        // -- tab
         if (e.which == 16) {
             this.isShift = true
         }
-        if (e.which == 40) {
-            let MentionDiv = document.querySelector('.draftjsWithMention>div:nth-child(2)')
-            if(MentionDiv){
-                const oriScrollTop = MentionDiv.scrollTop
-                if (oriScrollTop == 0){
-                    MentionDiv.scrollTop += 1
+
+        // -- 下
+        if ( e.which == 40 ) {
+            if ( this.state.openSnippetHint ){
+                e.stopPropagation()
+                e.preventDefault()
+
+                if ( this.state.nowFocusSnippet != null ) {
+                    this.setState( {
+                        nowFocusSnippet: this.state.nowFocusSnippet + 1
+                    } )
                 }else{
-                    MentionDiv.scrollTop += 35
+                    this.setState( {
+                        nowFocusSnippet: 0
+                    } )
                 }
             }
         }
-        if (e.which == 38) {
-            let MentionDiv = document.querySelector('.draftjsWithMention>div:nth-child(2)')
-            if(MentionDiv){
-                const oriScrollTop = MentionDiv.scrollTop
-                if (oriScrollTop-35< 0){
-                    MentionDiv.scrollTop = 0
-                }else{
-                    MentionDiv.scrollTop -= 35
+
+        // -- 上
+        if ( e.which == 38 ) {
+            if ( this.state.openSnippetHint ){
+                e.stopPropagation()
+                e.preventDefault()
+    
+                if (this.state.nowFocusSnippet){
+                    this.setState( {
+                        nowFocusSnippet: this.state.nowFocusSnippet - 1
+                    } )
                 }
+            }
+        }
+
+        // -- enter
+        if ( e.which == 13 ) {
+            if ( this.state.openSnippetHint && this.state.nowFocusSnippet !== null ){
+                e.stopPropagation()
+                e.preventDefault()
+    
+                this.handlePaste( this.nowSnippetConstent, true )
             }
         }
     }
@@ -265,12 +353,9 @@ class FreeTextWithSnippet extends React.Component {
         } else {
 
             if ( currentContentBlockText.length > 1 ){
-
                 
                 const startKey = textSelection.getStartOffset()
                 const preText  = currentContentBlockText.substring( startKey - 1 , startKey )
-                console.log(startKey)
-                console.log(currentContentBlockText)
                 
                 if ( preText !== ' ' ){
                     const isEnd = (startKey === currentContentBlockText.length)? true : false
@@ -298,6 +383,7 @@ class FreeTextWithSnippet extends React.Component {
         }
     }
     
+    // -- 搜尋字串 ---------------------------------------------------------------------
     setSearchStr = (editorState) =>{
         const textSelection  = editorState.getSelection()
         const currentContent = editorState.getCurrentContent()
@@ -307,25 +393,25 @@ class FreeTextWithSnippet extends React.Component {
         
         const preContentText = this.state.editorState.getCurrentContent().getPlainText()
         
-
-        if ( currentContentText === preContentText ){
+        if ( this.openSnippetHint === false ){
+            this.searchStr = ''
+            
+        } else if ( currentContentText === preContentText ){
             this.searchStr = ''
 
         } else {
-
             if ( currentContentBlockText.length > 0 ){
                 const startKey = textSelection.getStartOffset()
                 const preText  = currentContentBlockText.substring( startKey - 1 , startKey )
                 
-                console.log(preText)
                 if ( preText === ' ' ){
                     this.searchStr = ''
-                
+                    
                 } else {
-                    const lastSpace = currentContentBlockText.lastIndexOf(' ')
+                    // 從 0 到游標前的最後一個空白鍵
+                    const lastSpace = currentContentBlockText.substring( 0, startKey ).lastIndexOf(' ') 
                     this.searchStr = currentContentBlockText.substring( lastSpace, startKey ).trim()
-                    console.log(this.searchStr)
-                
+                    this.searchStrIndex = [ lastSpace>=0?lastSpace:0, startKey ]
                 }
             } else {
                 this.searchStr = ''
@@ -333,43 +419,10 @@ class FreeTextWithSnippet extends React.Component {
         }
     } 
 
-    onChange = (editorState) => {
-
-        // console.log('anchorOffset', window.getSelection().anchorOffset  )
-        // console.log('focusNode',    window.getSelection().focusNode  )
-        // console.log('focusOffset',  window.getSelection().focusOffset  )
-        // console.log('isCollapsed',  window.getSelection().isCollapsed )
-        // console.log('rangeCount',   window.getSelection().rangeCount  )
-        // console.log('range',   window.getSelection().getRangeAt(0)  )
-        // console.log('getStartKey',editorState.getSelection().getStartKey())
-        // console.log('getStartOffset',editorState.getSelection().getStartOffset())
-        
+    // -- 把 有 ___ 的內容位置存起來 ---------------------------------------------------------------------
+    setHashList = (editorState) =>{
         const nowContentState   = editorState.getCurrentContent()
-        const textContent       = nowContentState.getPlainText() || ''        
-        const textContentArray  = textContent.split('\n')
         const textBlockMapArray = nowContentState.getBlockMap().toArray()
-        const textSelection     = editorState.getSelection()
-        const textAnchor        = textSelection.getFocusKey()
-
-
-        // -- 判斷要不要跳出選擇片語窗 ---------------------------------------------------------------------
-        // ---------------------------------------------------------------------------------------------
-        this.toggleSnippetOptions(editorState)
-
-        // -- 設置搜尋字串 ---------------------------------------------------------------------
-        // ---------------------------------------------------------------------------------------------
-        this.setSearchStr(editorState)
-        
-        // -- 把 style 轉回一般 style ---------------------------------------------------------------------
-        // -----------------------------------------------------------------------------------------------
-        if (
-            ( editorState.getCurrentInlineStyle().toJSON().indexOf('gray') > -1 )
-        ){
-            editorState = EditorState.setInlineStyleOverride( editorState, OrderedSet.of('noStyled') )
-        }
-        
-        // -- 把 有 ___ 的內容位置存起來 ---------------------------------------------------------------------
-        // -----------------------------------------------------------------------------------------------
 
         let hashArray = []
 
@@ -392,6 +445,31 @@ class FreeTextWithSnippet extends React.Component {
         }
 
         this.hash = hashArray
+    }
+
+    onChange = (editorState) => {
+        const nowContentState   = editorState.getCurrentContent()
+        const textContent       = nowContentState.getPlainText() || ''        
+        const textContentArray  = textContent.split('\n')
+        const textSelection     = editorState.getSelection()
+        const textAnchor        = textSelection.getFocusKey()
+
+        // -- 判斷要不要跳出選擇片語窗 ---------------------------------------------------------------------
+        // ---------------------------------------------------------------------------------------------
+        this.toggleSnippetOptions(editorState)
+
+        // -- 設置搜尋字串 ---------------------------------------------------------------------
+        // ---------------------------------------------------------------------------------------------
+        this.setSearchStr(editorState)
+        
+        // -- 把 style 轉回一般 style ---------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------------
+        if ( editorState.getCurrentInlineStyle().toJSON().indexOf('gray') > -1 ) {
+            editorState = EditorState.setInlineStyleOverride( editorState, OrderedSet.of('noStyled') )
+        }
+
+        // -- 把 有 ___ 的內容位置存起來 ---------------------------------------------------------------------
+        this.setHashList(editorState)
 
         // --------------------------------------------------------------------------------
 
@@ -399,12 +477,19 @@ class FreeTextWithSnippet extends React.Component {
             editorState: editorState,
             searchStr: this.searchStr
         })
+
         this.props.onChange(editorState.getCurrentContent().getPlainText())
     }
 
     handleMouseUp = () =>{
         console.log('up')
         this.getCursorPosition()
+    }
+
+    handleSnippetChange = ( data ) => {
+        if (data) {
+            this.nowSnippetConstent = data.name
+        }
     }
 
     getCursorPosition = ()=>{
@@ -419,9 +504,12 @@ class FreeTextWithSnippet extends React.Component {
             snippetPosition = window.getSelection().getRangeAt(0).getBoundingClientRect()
         }
 
+        console.log(this.openSnippetHint)
+
         this.setState({
             snippetPosition: snippetPosition,
-            openSnippetHint: this.openSnippetHint
+            openSnippetHint: this.openSnippetHint,
+            nowFocusSnippet: this.openSnippetHint? this.state.nowFocusSnippet: null
         })
     }
 
@@ -429,10 +517,11 @@ class FreeTextWithSnippet extends React.Component {
         this.editor.focus()
     }
 
+    // 按 tab 選擇三底線
     forceSelect = (backward) => {
         const nowEditor = this.state.editorState
         const hash = this.hash
-        
+
         // --- 找到 key map --- //
         const textBlockMap = nowEditor.getCurrentContent().getBlockMap()
         let textBlockKeys = []
@@ -479,10 +568,13 @@ class FreeTextWithSnippet extends React.Component {
                 isBackward: true
             })
 
-            const newState = EditorState.forceSelection(
+            let newState = EditorState.forceSelection(
                 this.state.editorState,
                 updatedSelection
             )
+
+            newState = RichUtils.toggleInlineStyle(newState, 'gray')
+            newState = EditorState.setInlineStyleOverride(newState, OrderedSet.of('noStyled'))
 
             this.setState({
                 editorState: newState,
@@ -494,7 +586,7 @@ class FreeTextWithSnippet extends React.Component {
 
     onTab = (e) => {
         if(this.hash.length!=0){
-            this.forceSelect(this.isShift?true:false)
+            this.forceSelect( this.isShift ? true : false )
         }
     }
 
@@ -507,13 +599,18 @@ class FreeTextWithSnippet extends React.Component {
         if ( this.state.openSnippetHint && this.state.snippetPosition.left != null ){
             snippetHintDiv = (
                 <span style = {{ position: 'absolute', left: this.state.snippetPosition.x, top: this.state.snippetPosition.y + this.fontHeight }}>
-                    <SnippetDiv snippet = {this.state.snippetList} searchStr={this.state.searchStr} />
+                    <SnippetDiv 
+                        snippet   = {this.state.snippetList} 
+                        searchStr = {this.state.searchStr} 
+                        focus     = {this.state.nowFocusSnippet} 
+                        onChange  = { this.handleSnippetChange }
+                    />
                 </span>
             )
         }
 
         return (
-            <div style={{width:'100%'}}>
+            <div style={{ width:'100%' }}>
                 <div
                     style={{ 
                         width: '100%',
@@ -542,7 +639,7 @@ class FreeTextWithSnippet extends React.Component {
                             onTab       = {this.onTab}
                             spellCheck  = {true}
                             handlePastedText = {this.handlePaste} 
-                            customStyleMap = {this.StyleMap}
+                            customStyleMap   = {this.StyleMap}
                         />
                     </div>
                 </div>
