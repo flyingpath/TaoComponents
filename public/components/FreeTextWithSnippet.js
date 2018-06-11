@@ -17,6 +17,7 @@ class SnippetDiv extends React.Component {
     }
 
     componentDidUpdate(){
+        // 選項滑至可視
         if( this.props.focus != null ){
             if(this.refList){
                 if (this.refList[this.props.focus]){
@@ -29,13 +30,12 @@ class SnippetDiv extends React.Component {
     }
 
     processing = ( snippetList, searchStr ) => {
-        
-        // const searchReValue = value.toUpperCase().replace(/\./g, '\\.')
+
+        // 用關鍵字搜尋片語
 
         if (searchStr.trim() === ''){
             return []
         }
-
         const re = new RegExp(`^${searchStr}.*`)
         
         let fData = _.filter(snippetList, (eachdata) => {
@@ -99,15 +99,16 @@ class SnippetDiv extends React.Component {
             </div>
         )
     }
-
 }
 
 class FreeTextWithSnippet extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            editorState:  props.defaultText?EditorState.createWithContent(ContentState.createFromText(props.defaultText))
-                         :EditorState.createWithContent(ContentState.createFromText('')),
+            editorState     :  props.defaultText?EditorState.createWithContent(ContentState.createFromText(props.defaultText))
+                                     :EditorState.createWithContent(ContentState.createFromText('')),
+            defaultText     : props.defaultText || '',
+            paste           : props.paste || '',
             pureText        : '',
             snippetList     : [],
             snippetPosition : {
@@ -118,7 +119,7 @@ class FreeTextWithSnippet extends React.Component {
             },
             openSnippetHint: true,
             searchStr: '',
-            nowFocusSnippet : null
+            nowFocusSnippet : null,
         }
 
         this.editor = null
@@ -134,6 +135,7 @@ class FreeTextWithSnippet extends React.Component {
         this.tabListener = null
         this.shiftListener = null
         this.pasteListener = null
+        this.touchendListener = null
         
         this.copyCursor= null
         this.StyleMap={
@@ -152,8 +154,9 @@ class FreeTextWithSnippet extends React.Component {
         this.tabListener   = draftBody.addEventListener('keydown', this.keyDownFn, true )
         this.shiftListener = draftBody.addEventListener('keyup'  , this.keyUpFn )
         this.pasteListener = draftBody.addEventListener('paste'  , this.handlePaste )
+        this.touchendListener = draftBody.addEventListener('touchend', this.keyUpFn )
 
-
+        // -- 拿片語
         fetch( `https://emr.kfsyscc.org/python/note-get_snipp/001965`, { credentials: 'include' } )
         .then( response => response.json() )
         .then( backdata => {
@@ -178,34 +181,68 @@ class FreeTextWithSnippet extends React.Component {
         })
     }
     
-    componentWillReceiveProps(nextProps){
-        if (this.props.defaultText != nextProps.defaultText ){
-            if (nextProps.defaultText){
-                const selection = this.state.editorState.getSelection()
-                const nowContentState = this.state.editorState.getCurrentContent()
-                const nextContentState = Modifier.insertText(nowContentState, selection, nextProps.defaultText)
-                const nextEditorState = EditorState.push(
-                    this.state.editorState,
+    static getDerivedStateFromProps(nextProps, prevState){
+        const selection        = prevState.editorState.getSelection()
+        const nowContentState  = prevState.editorState.getCurrentContent()
+        
+        // 從外部傳入預設內容
+        if ( prevState.defaultText != nextProps.defaultText ){
+            if ( nextProps.defaultText ){
+                const nextContentState = Modifier.insertText( nowContentState, selection, nextProps.defaultText )
+                const nextEditorState  = EditorState.push(
+                    prevState.editorState,
                     nextContentState,
                     'insert-characters'
                 )
-                this.setState({
+                return {
                     editorState: nextEditorState
-                })
+                }
             }
         }
+
+        // 從外部傳入要貼上的內容
         if ( nextProps.paste ) {
-            if( this.props.paste != nextProps.paste ){
-                this.focus()
-                this.handlePaste(nextProps.paste)
+            let nextContentState
+            let nextEditorState
+
+            if( prevState.paste != nextProps.paste ){
+                // 非片語貼上
+                if (!selection.isCollapsed()){
+                    nextContentState = Modifier.replaceText(nowContentState, selection, text, styleName)
+                    nextEditorState = EditorState.push(
+                        prevState.editorState,
+                        nextContentState,
+                        'replace-characters'
+                    )
+                }else{
+                    nextContentState = Modifier.insertText(nowContentState, selection, text, styleName)
+                    nextEditorState = EditorState.push(
+                        prevState.editorState,
+                        nextContentState,
+                        'insert-characters'
+                    )
+                }
+
+                nextEditorState = RichUtils.toggleInlineStyle(nextEditorState, 'gray')
+                nextEditorState = EditorState.setInlineStyleOverride(nextEditorState, OrderedSet.of('noStyled'))
+                
+                this.setHashList(nextEditorState)
+                this.props.onChange( prevState.editorState.getCurrentContent().getPlainText() + text )
+                
+                return { 
+                    editorState: nextEditorState,
+                    openSnippetHint: false,
+                    searchStr: '',
+                    nowFocusSnippet: null
+                }
             }
         }
+        
+        return null
     }
 
-    // 貼上
+    // -- 貼上
     handlePaste = ( text, isSnippetPaste = false ) => {
-
-        console.log(text)
 
         if (!text){
             return 'handled'
@@ -213,6 +250,9 @@ class FreeTextWithSnippet extends React.Component {
         if (typeof(text) == 'object'){
             return 'handled'
         }
+        text = text.replace(/\r/g, '' )
+        text = text.replace(/\n$/, '' )
+
         let editorState = this.state.editorState
 
         const nowContentState = editorState.getCurrentContent()
@@ -504,8 +544,6 @@ class FreeTextWithSnippet extends React.Component {
             snippetPosition = window.getSelection().getRangeAt(0).getBoundingClientRect()
         }
 
-        console.log(this.openSnippetHint)
-
         this.setState({
             snippetPosition: snippetPosition,
             openSnippetHint: this.openSnippetHint,
@@ -622,7 +660,6 @@ class FreeTextWithSnippet extends React.Component {
                         style={{ 
                             display: 'inline-block',
                             border: '1px solid gray', 
-                            margin: '10px 10px 10px 10px', 
                             padding: '5px', 
                             height: 'auto', 
                             width: '100%',
@@ -650,7 +687,7 @@ class FreeTextWithSnippet extends React.Component {
 }
 
 FreeTextWithSnippet.defaultProps = {
-    defaultText: '',
+    defaultText: '5678',
     onChange: ()=>{}
 }
 

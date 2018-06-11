@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "main": "public/index.js",
     "scripts": {
-        "start": "webpack-dev-server --mode development --hot --env.type=dev --env.port=9485",
+        "start": "webpack-dev-server --mode development --hot --env.type=dev --env.port=9484",
         "build": "webpack --mode production --env.type=pro --progress --profile --colors"
     },
     "dependencies": {
