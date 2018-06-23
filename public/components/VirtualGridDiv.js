@@ -150,7 +150,7 @@ class VirtualTable extends React.Component {
     }
 
     search =(e)=>{
-        const searchStr = e.target.value
+        const searchStr = e.target.value.toLowerCase()
         
         let data = this.state.rawDecodeData
 
@@ -164,7 +164,7 @@ class VirtualTable extends React.Component {
             if( !eachData.searchStr ){
                 return false
             }else{
-                if ( eachData.searchStr.indexOf(searchStr) >=0 ){
+                if ( eachData.searchStr.toLowerCase().indexOf(searchStr) >=0 ){
                     return true
                 }else{
                     return false
