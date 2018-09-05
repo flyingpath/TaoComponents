@@ -226,8 +226,7 @@ class FreeTextWithSnippet extends React.Component {
                 nextEditorState = RichUtils.toggleInlineStyle(nextEditorState, 'gray')
                 nextEditorState = EditorState.setInlineStyleOverride(nextEditorState, OrderedSet.of('noStyled'))
                 
-                this.setHashList(nextEditorState)
-                this.props.onChange( prevState.editorState.getCurrentContent().getPlainText() + text )
+                nextProps.onChange( prevState.editorState.getCurrentContent().getPlainText() + text )
                 
                 return { 
                     editorState: nextEditorState,
@@ -264,12 +263,13 @@ class FreeTextWithSnippet extends React.Component {
         // 如果是片語貼上，要取代片語前的字
         if ( isSnippetPaste == true ){
             let newSelection = SelectionState.createEmpty()
+            this.copyCursor  = selection
 
             const updatedSelection = newSelection.merge({
                 focusKey: selection.getAnchorKey(),
                 focusOffset: this.searchStrIndex[1],
                 anchorKey: selection.getAnchorKey(),
-                anchorOffset: this.searchStrIndex[0],
+                anchorOffset: this.searchStrIndex[0] === 0 ? 0 : this.searchStrIndex[0]+1,
                 isBackward: false,
                 hasFocus: true
             })
@@ -648,7 +648,7 @@ class FreeTextWithSnippet extends React.Component {
         }
 
         return (
-            <div style={{ width:'100%' }}>
+            <div style={{ width:'100%', position:'relative' }}>
                 <div
                     style={{ 
                         width: '100%',

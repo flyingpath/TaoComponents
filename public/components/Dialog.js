@@ -95,7 +95,6 @@ T_Dialog.defaultProps = {
     backCompStyle: {},
     dialogID: "tao-dialog-writeNote",
     dialogBodyID: "tao-dialog-writeNoteBody",
-
 }
 
 export default T_Dialog

@@ -9,6 +9,7 @@ import CheckBoxes from './components/CheckBoxes'
 import UploadFile from './components/UploadFile'
 import FreeTextWithSnippet from './components/FreeTextWithSnippet'
 import RabbitMQ from './components/RabbitMQ'
+import MantainTable from './components/MantainTable'
 
 import testData from './stores/testData'
 
@@ -21,32 +22,23 @@ class RenderForcer extends React.Component {
     }
 
     handleClick = ()=>{
-        this.fetch()
     }
 
-    fetch(){
-        fetch('https://google.tw')
-            .then(x=>x.json)
-            .then(x=>{
-                this.setState({
-                    dataItem: testData
-                })
-            })
-            .catch(x=>{
-                console.log('1')
-                    this.setState({
-                        dataItem: testData
-                    }) 
-                }
-            )
-    }
     render() {
         return (
             <div style={{height:'100%', width: '100%', overflow:'hidden' }}>
-                <FreeTextWithSnippet />
+                <MantainTable />
             </div>
         )
     }
+
+    // render() {
+    //     return (
+    //         <div style={{height:'100%', width: '100%', overflow:'hidden' }}>
+    //             <FreeTextWithSnippet />
+    //         </div>
+    //     )
+    // }
         
     // <RabbitMQ />
     // render() {

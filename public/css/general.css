@@ -4,3 +4,8 @@ html, body, #app{
     position: relative;
     margin: 0;
 }
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
