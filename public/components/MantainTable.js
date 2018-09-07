@@ -60,7 +60,7 @@ class MaintainTable extends React.Component {
         return data.map( (each, idx)=>(
             <div className = "flex-row" key={`MTTR${idx}`}>
                 { this.columnRender(columnData, each, idx) }
-                <div onClick={ this.deleteRow(idx) } >delete</div>
+                <div onClick={ this.deleteRow(idx) } className='delete'>-</div>
             </div>
         ) )
     }
@@ -122,6 +122,9 @@ class MaintainTable extends React.Component {
     }
 
     render() {
+
+        const globalWidth = this.state.columnWidth
+
         return (
             <div className='AppBody'>
             <div className='table' >
@@ -143,10 +146,10 @@ class MaintainTable extends React.Component {
                     </div>
                 </div>
                 <div 
-                    style   = {{ position:'absolute', bottom:'0px', right: '-30px' }}
                     onClick = { this.addRow }
+                    className = 'add'
                 >
-                    add
+                    +
                 </div>
             </div>
             <button onClick = {this.save}>存檔</button>
@@ -154,16 +157,28 @@ class MaintainTable extends React.Component {
                 .table {
                     position: relative; 
                     width: fit-content;
+                    margin-right: 50px;
                 }
                 .AppBody :global(.flex-row) {
                     display: flex;
                     flex-direction: row;
                 }
                 .AppBody :global(.table-column) {
-                    width: ${this.state.columnWidth}px
+                    width: ${globalWidth}px
                 }
                 .AppBody :global(.input) {
-                    width: ${this.state.columnWidth}px
+                    width: ${globalWidth}px
+                }
+                .AppBody :global(.delete) {
+                    position: relative;
+                    right: -15px;
+                    cursor: pointer;
+                }
+                .AppBody :global(.add) {
+                    position: absolute;
+                    bottom: 0px;
+                    right: -17px;
+                    cursor: pointer;
                 }
             `}</style>
             </div>
