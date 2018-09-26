@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom'
 
 import RoundButtonGroup from './components/RoundButtonGroup'
 import DragPage from './components/DragPage'
-import Dialog from './components/Dialog'
+import Dialog from './components/dialog/Dialog'
 import VirtualGridDiv from './components/VirtualGridDiv'
-import CheckBoxes from './components/CheckBoxes'
+import CheckBoxes from './components/check-boxes/CheckBoxes'
 import UploadFile from './components/UploadFile'
 import FreeTextWithSnippet from './components/FreeTextWithSnippet'
 import RabbitMQ from './components/RabbitMQ'
@@ -28,6 +28,7 @@ class RenderForcer extends React.Component {
         return (
             <div style={{height:'100%', width: '100%', overflow:'hidden' }}>
                 <MantainTable />
+                <Dialog onBackClick={ (e)=>{console.log(e)} } />
             </div>
         )
     }
