@@ -182,7 +182,13 @@ class MaintainTable extends React.Component {
             </div>
             {
                 this.props.hasSaveButton && 
-                <button className='saveButton' onClick = {this.onSave}>存檔</button>
+                <button 
+                    className='saveButton' 
+                    onClick = {this.onSave}
+                    style={ this.props.saveButtonStyle || null }
+                >
+                存檔
+                </button>
             }
             <style jsx>{`
                 .table {
@@ -197,6 +203,7 @@ class MaintainTable extends React.Component {
                     box-shadow: 1px 1px 4px 0px rgba(0, 0, 0, 0.5);
                     padding: 0px 10px 5px 10px;
                     border-radius: 5px;
+                    text-align: left;
                 }
                 .AppBody :global(.flex-row) {
                     display: flex;
@@ -309,5 +316,8 @@ MaintainTable.defaultProps = {
     hasSaveButton: true,
     onSave: () =>{},
     onChange: () =>{},
+    backStyle: null,
+    tableStyle: null,
+    saveButtonStyle: null,
 }
 export default MaintainTable
