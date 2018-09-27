@@ -143,6 +143,7 @@ class MaintainTable extends React.Component {
     onSave = () => {
         const data = this.state.listData
         this.props.onSave(data)
+        console.log(data)
     }
 
     render() {
@@ -150,8 +151,8 @@ class MaintainTable extends React.Component {
         const globalWidth = this.state.columnWidth
 
         return (
-            <div className='AppBody' style={ this.props.backStyle || null } >
-            <div className='table'   style={ this.props.tableStyle || null } >
+            <div className='AppBody'>
+            <div className='table' >
                 <div>
                     <div className = "MT-header flex-row">
                         { this.state.listColumnName.map( (each, idx)=>(

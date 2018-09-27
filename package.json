@@ -5,7 +5,7 @@
     "scripts": {
         "start": "webpack-dev-server --mode development --hot --env.type=dev --env.port=9484",
         "build": "webpack --mode production --env.type=pro --progress --profile --colors",
-        "compile": "babel public --out-dir src"
+        "compile": "babel publish --out-dir src"
     },
     "dependencies": {
         "amqplib": "^0.5.2",
