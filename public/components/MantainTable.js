@@ -195,6 +195,9 @@ class MaintainTable extends React.Component {
                 .AppBody{
                     width: ${globalWidth}px;
                     position: relative;
+                    box-shadow: 1px 1px 4px 0px rgba(0, 0, 0, 0.5);
+                    padding: 0px 10px 5px 10px;
+                    border-radius: 5px;
                 }
                 .AppBody :global(.flex-row) {
                     display: flex;
@@ -259,12 +262,12 @@ class MaintainTable extends React.Component {
                     border-bottom: 2px solid #52a8ff;
                 }
                 .saveButton{
-                    position: absolute;
-                    right: 30px;
+                    position: relative;
+                    left: 70%;
                     border: none;
                     border-radius: 5px;
                     padding: 6px 10px;
-                    margin: 4px 0px;
+                    margin: 15px 0px 5px 0px;
                     background: none;
                     box-shadow: 1px 1px 4px 0px rgba(50, 88, 192, 0.5);
                     cursor:pointer;
