@@ -1,19 +1,70 @@
 import React from 'react' 
 import _ from 'lodash' 
-import qs from "qs"
+
+const Column = ({columns, rowData, rowIdx, onChangeColumn}) => {
+    return columns.map( ( each, idx )=>(
+        <div key={`MTTD${rowIdx}${idx}`} className="MTTD"  >
+            <input 
+                value={ rowData[ each.value ] } 
+                onChange={ onChangeColumn(rowIdx, each.value) } 
+                className = "input"
+            />
+        </div>
+    ) )
+}
+
+const Row = (props) => {
+    
+    const data       = props.data
+    const columnData = props.columnData
+    const onDeleteRow    = props.onDeleteRow
+    const onChangeColumn = props.onChangeColumn
+
+    return (
+        <React.Fragment>
+        {
+            data.map( (each, idx)=>(
+                <div className = "MTTR flex-row" key={`MTTR${idx}`}>
+                    <Column 
+                        columns = { columnData }
+                        rowData = { each }
+                        rowIdx = { idx }
+                        onChangeColumn = {onChangeColumn}
+                    />
+                    <div onClick={ onDeleteRow(idx) } className='delete'>-</div>
+                </div>
+            ) )
+        }
+        </React.Fragment>
+    )
+}
+
+const AddRow = (props) => {
+    
+    const columns = props.columns
+    const data = props.newData
+    const onChange = props.onChange
+
+    return columns.map( ( each, idx )=>(
+        <div key={`MTADDTD$${idx}`} className = "MTTD MTTD-add table-column" >
+            <input 
+                value = { each.value in data? data[ each.value ]:'' } 
+                onChange = { onChange(each.value) }
+                className = "input"
+            />
+        </div>
+    ) )
+}
 
 class MaintainTable extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
             listColumnName: [],
-            listData: [],
-            newData: {},
+            listData   : [],
+            newData    : {},
             columnWidth: props.columnWidth
         }
-    }
-
-    componentDidMount(){
     }
 
     static getDerivedStateFromProps( nextProps, preState ){
@@ -31,58 +82,19 @@ class MaintainTable extends React.Component {
         }
     }
 
-    onChangeInput = (rowIdx, key) => {
-        return (e) => {
-            const value = e.target.value 
-            
-            let newListData = _.cloneDeep(this.state.listData) 
-            newListData[rowIdx][key] = value
+    componentDidUpdate () {
+        const data = this.state.listData
+        this.props.onChange(data)
+    }
 
+    onChangeAdd = (key)=> {
+        return (e) => {
+            let newData = _.cloneDeep( this.state.newData )
+            newData[ key ] = e.target.value
             this.setState({
-                listData: newListData
+                newData: newData
             })
         }
-    }
-
-    columnRender = (columns, rowData, rowIdx) => {
-        return columns.map( ( each, idx )=>(
-            <div key={`MTTD${rowIdx}${idx}`} style={{ width: this.state.columnWidth }} >
-                <input 
-                    value={ rowData[ each.value ] } 
-                    onChange={this.onChangeInput(rowIdx, each.value) } 
-                    className = "input"
-                />
-            </div>
-        ) )
-    }
-
-    rowRender = (columnData, data) => {
-        return data.map( (each, idx)=>(
-            <div className = "flex-row" key={`MTTR${idx}`}>
-                { this.columnRender(columnData, each, idx) }
-                <div onClick={ this.deleteRow(idx) } className='delete'>-</div>
-            </div>
-        ) )
-    }
-
-    addRowRender = (columns) =>{
-        const data = this.state.newData
-
-        return columns.map( ( each, idx )=>(
-            <div key={`MTADDTD$${idx}`} className = "table-column" >
-                <input 
-                    value = { each.value in data? data[ each.value ]:'' } 
-                    onChange = { (e)=>{
-                        let newData = _.cloneDeep(data)
-                        newData[each.value] = e.target.value
-                        this.setState({
-                            newData: newData
-                        })
-                    }}
-                    className = "input"
-                />
-            </div>
-        ) )
     }
 
     deleteRow = (index) => {
@@ -115,10 +127,23 @@ class MaintainTable extends React.Component {
         })
     }
 
-    save = () => {
+    onChangeInput = (rowIdx, key) => {
+        return (e) => {
+            const value = e.target.value 
+            
+            let newListData = _.cloneDeep(this.state.listData) 
+            newListData[rowIdx][key] = value
+
+            this.setState({
+                listData: newListData
+            })
+        }
+    }
+
+    onSave = () => {
         const data = this.state.listData
-        console.log(data)
         this.props.onSave(data)
+        console.log(data)
     }
 
     render() {
@@ -129,56 +154,126 @@ class MaintainTable extends React.Component {
             <div className='AppBody'>
             <div className='table' >
                 <div>
-                    <div className = "flex-row">
+                    <div className = "MT-header flex-row">
                         { this.state.listColumnName.map( (each, idx)=>(
-                            <div className = "table-column" key = { idx } >
+                            <div className = "MTTD" key = { idx } >
                                 {each.label}
                             </div>
                         ) ) }
                     </div>
-                        {
-                            this.rowRender( this.state.listColumnName, this.state.listData )
-                        }
-                    <div className = "flex-row">
-                        {
-                            this.addRowRender( this.state.listColumnName )
-                        }
+                    <div className = "MT-outter">
+                        <Row 
+                            data       = {this.state.listData} 
+                            columnData = {this.state.listColumnName}
+                            onChangeColumn = { this.onChangeInput }
+                            onDeleteRow    = { this.deleteRow }
+                        />
+                        <div className = "MTTR flex-row">
+                            <AddRow 
+                                columns = { this.state.listColumnName }
+                                newData = { this.state.newData }
+                                onChange = { this.onChangeAdd }
+                            />
+                            <div onClick = { this.addRow } className = 'add' >
+                                +
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div 
-                    onClick = { this.addRow }
-                    className = 'add'
-                >
-                    +
-                </div>
             </div>
-            <button onClick = {this.save}>存檔</button>
+            {
+                this.props.hasSaveButton && 
+                <button className='saveButton' onClick = {this.onSave}>存檔</button>
+            }
             <style jsx>{`
                 .table {
                     position: relative; 
-                    width: fit-content;
-                    margin-right: 50px;
+                    width: 100%;
+                    padding-right: 25px;
+                    box-sizing: border-box;
+                }
+                .AppBody{
+                    width: ${globalWidth}px;
+                    position: relative;
                 }
                 .AppBody :global(.flex-row) {
                     display: flex;
                     flex-direction: row;
-                }
-                .AppBody :global(.table-column) {
-                    width: ${globalWidth}px
+                    justify-content: stretch;
                 }
                 .AppBody :global(.input) {
-                    width: ${globalWidth}px
+                    width: 100%;
+                    border-top: none;
+                    border-right: none;
+                    border-left: none;
                 }
                 .AppBody :global(.delete) {
-                    position: relative;
-                    right: -15px;
+                    width: 22px;
+                    position: absolute;
+                    right: 0px;
+                    padding: 0px 7px;
+                    border-radius: 2px;
+                    color: white;
+                    background: rgba(255, 118, 223, 0.8);
+                    font-weight: bold;
                     cursor: pointer;
+                    box-sizing: border-box;
+                    text-align:center;
+                    display: none;
+                }
+                .AppBody :global(.delete):active {
+                    background: rgba(255, 118, 223, 0.4);
                 }
                 .AppBody :global(.add) {
+                    width: 22px;
                     position: absolute;
-                    bottom: 0px;
-                    right: -17px;
+                    right: -25px;
                     cursor: pointer;
+                    padding: 0px 7px;
+                    background: rgba(23, 198, 136, 0.8);
+                    border-radius: 2px;
+                    font-weight: bold;
+                    color: white;
+                    text-align:center;
+                    box-sizing: border-box;
+                }
+                .AppBody :global(.add):active {
+                    background: rgba(23, 198, 136, 0.4);
+                }
+                .AppBody :global(.MTTD) {
+                    padding: 2px 0px 0px 4px;
+                    margin-right: 4px;
+                    flex:1;
+                }
+                .AppBody :global(.MTTR) {
+                    position: relative;
+                }
+                .AppBody :global(.MTTR:hover .delete) {
+                    display: block;
+                }
+                .AppBody :global(.MT-outter) {
+                    // border: 1px solid gray;
+                    // border-radius: 5px;
+                }
+                .AppBody :global(.MT-header .MTTD) {
+                    border-bottom: 2px solid #52a8ff;
+                }
+                .saveButton{
+                    position: absolute;
+                    right: 30px;
+                    border: none;
+                    border-radius: 5px;
+                    padding: 6px 10px;
+                    margin: 4px 0px;
+                    background: none;
+                    box-shadow: 1px 1px 4px 0px rgba(50, 88, 192, 0.5);
+                    cursor:pointer;
+                }
+                .saveButton:focus {
+                    outline: 1px dashed rgba(50,88,192,0.1);
+                }
+                .saveButton:active {
+                    box-shadow: 0px 0px 1px 1px rgba(50,88,192,0.2)
                 }
             `}</style>
             </div>
@@ -187,6 +282,7 @@ class MaintainTable extends React.Component {
 }
 
 MaintainTable.defaultProps = {
+    columnWidth: 250,
     listColumnName: [
         {
             "label": "名稱",
@@ -201,7 +297,6 @@ MaintainTable.defaultProps = {
         {
             "label": "R1",
             "value": "R1",
-            "order": 1
         },
         {
             "label": "R9",
@@ -209,9 +304,8 @@ MaintainTable.defaultProps = {
             "order": 9
         }
     ],
-    onSave: () =>{
-
-    },
-    columnWidth: 100
+    hasSaveButton: true,
+    onSave: () =>{},
+    onChange: () =>{},
 }
 export default MaintainTable

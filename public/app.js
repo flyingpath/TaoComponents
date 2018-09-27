@@ -27,8 +27,7 @@ class RenderForcer extends React.Component {
     render() {
         return (
             <div style={{height:'100%', width: '100%', overflow:'hidden' }}>
-                <MantainTable />
-                <Dialog onBackClick={ (e)=>{console.log(e)} } />
+                <MantainTable onChange={(d)=>console.log(d)} />
             </div>
         )
     }
@@ -37,6 +36,7 @@ class RenderForcer extends React.Component {
     //     return (
     //         <div style={{height:'100%', width: '100%', overflow:'hidden' }}>
     //             <FreeTextWithSnippet />
+    //             <Dialog onBackClick={ (e)=>{console.log(e)} } />
     //         </div>
     //     )
     // }
