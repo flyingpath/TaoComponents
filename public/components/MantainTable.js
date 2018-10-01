@@ -82,7 +82,7 @@ class MaintainTable extends React.Component {
         }
     }
 
-    componentDidUpdate () {
+    triggerOnChange = () =>{
         const data = this.state.listData
         this.props.onChange(data)
     }
@@ -104,6 +104,8 @@ class MaintainTable extends React.Component {
             this.setState({
                 listData: newData
             })
+
+            this.triggerOnChange()
         }
     }
 
@@ -125,6 +127,8 @@ class MaintainTable extends React.Component {
             listData: newData,
             newData : {}
         })
+
+        this.triggerOnChange()
     }
 
     onChangeInput = (rowIdx, key) => {
@@ -143,6 +147,7 @@ class MaintainTable extends React.Component {
     onSave = () => {
         const data = this.state.listData
         this.props.onSave(data)
+        this.triggerOnChange()
     }
 
     render() {
